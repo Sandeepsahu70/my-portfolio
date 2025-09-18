@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:portfolio/widgets/floatingactionbutton.dart';
 import 'sections/home_section.dart';
 import 'sections/about_section.dart';
@@ -7,6 +6,7 @@ import 'sections/projects_section.dart';
 import 'sections/experience_section.dart';
 import 'sections/contact_section.dart';
 import 'widgets/custom_navbar.dart';
+import 'utils/responsive_utils.dart';
 
 void main() {
   runApp(const MyApp());
@@ -108,7 +108,8 @@ class _PortfolioPageState extends State<PortfolioPage>
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(80),
+        preferredSize:
+            Size.fromHeight(ResponsiveUtils.isMobile(context) ? 70 : 80),
         child: AnimatedBuilder(
           animation: _navbarController,
           builder: (context, child) => CustomNavbar(

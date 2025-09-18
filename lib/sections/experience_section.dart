@@ -28,7 +28,7 @@ class ExperienceSection extends StatelessWidget {
       company: 'AinFit Innovation',
       position: 'Flutter Developer Intern',
       period: '05/2024 – 07/2024',
-      location: 'Noida, Uttar Pradesh',
+      location: 'Noida, UttarPradesh',
       description:
       'Contributed to cross-platform app development during internship, creating reusable widgets and enhancing navigation flows.',
       achievements: [
@@ -333,7 +333,7 @@ class ExperienceSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        Row(
+          Row(
           children: [
             Container(
               padding: const EdgeInsets.symmetric(

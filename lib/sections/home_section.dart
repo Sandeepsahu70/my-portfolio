@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import '../utils/responsive_utils.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeSection extends StatefulWidget {
   const HomeSection({super.key});
@@ -15,6 +17,10 @@ class _HomeSectionState extends State<HomeSection>
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _scaleAnimation;
+
+  final Uri resumeUrl = Uri.parse(
+    "https://drive.google.com/uc?export=download&id=1Yh1Xk-_AWAhW4NNdnS9exT9_QJQx34kD",
+  );
 
   @override
   void initState() {
@@ -67,7 +73,6 @@ class _HomeSectionState extends State<HomeSection>
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final isDesktop = size.width > 768;
 
     return Container(
       height: size.height,
@@ -97,10 +102,7 @@ class _HomeSectionState extends State<HomeSection>
           // Main content
           SafeArea(
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: isDesktop ? 80 : 20,
-                vertical: 40,
-              ),
+              padding: ResponsiveUtils.sectionPadding(context),
               child: AnimatedBuilder(
                 animation: _animationController,
                 builder: (context, child) => FadeTransition(
@@ -109,9 +111,9 @@ class _HomeSectionState extends State<HomeSection>
                     position: _slideAnimation,
                     child: ScaleTransition(
                       scale: _scaleAnimation,
-                      child: isDesktop
-                          ? _buildDesktopLayout(size)
-                          : _buildMobileLayout(size),
+                      child: ResponsiveUtils.isDesktop(context)
+                          ? _buildDesktopLayout(context)
+                          : _buildMobileLayout(context),
                     ),
                   ),
                 ),
@@ -123,7 +125,7 @@ class _HomeSectionState extends State<HomeSection>
     );
   }
 
-  Widget _buildDesktopLayout(Size size) {
+  Widget _buildDesktopLayout(BuildContext context) {
     return Row(
       children: [
         Expanded(
@@ -132,73 +134,81 @@ class _HomeSectionState extends State<HomeSection>
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildGreeting(),
-              const SizedBox(height: 20),
-              _buildName(),
-              const SizedBox(height: 20),
-              _buildTitle(),
-              const SizedBox(height: 30),
-              _buildDescription(),
-              const SizedBox(height: 40),
-              _buildActionButtons(),
+              _buildGreeting(context),
+              ResponsiveUtils.verticalSpace(context, 15),
+              _buildName(context),
+              ResponsiveUtils.verticalSpace(context, 20),
+              _buildTitle(context),
+              ResponsiveUtils.verticalSpace(context, 20),
+              _buildDescription(context),
+              ResponsiveUtils.verticalSpace(context, 30),
+              _buildActionButtons(context),
             ],
           ),
         ),
         Expanded(
           flex: 2,
-          child: _buildProfileImage(),
+          child: _buildProfileImage(context),
         ),
       ],
     );
   }
 
-  Widget _buildMobileLayout(Size size) {
+  Widget _buildMobileLayout(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildProfileImage(),
-        const SizedBox(height: 30),
-        _buildGreeting(),
-        const SizedBox(height: 15),
-        _buildName(),
-        const SizedBox(height: 15),
-        _buildTitle(),
-        const SizedBox(height: 25),
-        _buildDescription(),
-        const SizedBox(height: 30),
-        _buildActionButtons(),
+        _buildProfileImage(context),
+        ResponsiveUtils.verticalSpace(context, 30),
+        _buildGreeting(context),
+        ResponsiveUtils.verticalSpace(context, 15),
+        _buildName(context),
+        ResponsiveUtils.verticalSpace(context, 15),
+        _buildTitle(context),
+        ResponsiveUtils.verticalSpace(context, 25),
+        _buildDescription(context),
+        ResponsiveUtils.verticalSpace(context, 30),
+        _buildActionButtons(context),
       ],
     );
   }
 
-  Widget _buildGreeting() {
+  Widget _buildGreeting(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: ResponsiveUtils.paddingSymmetric(context,
+          horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(50),
+        borderRadius:
+            BorderRadius.circular(ResponsiveUtils.radius(context, 50)),
         border: Border.all(color: Colors.white.withOpacity(0.3)),
       ),
-      child: const Text(
+      child: Text(
         '👋 Hello, I\'m',
         style: TextStyle(
           color: Colors.white,
-          fontSize: 16,
+          fontSize: ResponsiveUtils.fontSize(context, 16),
           fontWeight: FontWeight.w500,
         ),
       ),
     );
   }
 
-  Widget _buildName() {
+  Widget _buildName(BuildContext context) {
     return ShaderMask(
       shaderCallback: (bounds) => const LinearGradient(
         colors: [Colors.white, Color(0xFFE0E7FF)],
       ).createShader(bounds),
-      child: const Text(
+      child: Text(
         'Sandeep Teli',
         style: TextStyle(
-          fontSize: 48,
+          fontSize: ResponsiveUtils.fontSize(
+              context,
+              ResponsiveUtils.isMobile(context)
+                  ? 32
+                  : ResponsiveUtils.isTablet(context)
+                      ? 40
+                      : 48),
           fontWeight: FontWeight.bold,
           color: Colors.white,
           height: 1.1,
@@ -208,100 +218,126 @@ class _HomeSectionState extends State<HomeSection>
     );
   }
 
-  Widget _buildTitle() {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Text(
-                'Flutter Developer',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                ),
+  Widget _buildTitle(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Text(
+              'Flutter Developer',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: ResponsiveUtils.fontSize(
+                    context,
+                    ResponsiveUtils.isMobile(context)
+                        ? 18
+                        : ResponsiveUtils.isTablet(context)
+                            ? 20
+                            : 24),
+                fontWeight: FontWeight.w600,
               ),
-              const SizedBox(width: 12),
-              Container(
-                width: 8,
-                height: 8,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF10B981),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '1+ Years Experience',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.8),
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
             ),
+            ResponsiveUtils.horizontalSpace(context, 12),
+            Container(
+              width: ResponsiveUtils.width(context, 8),
+              height: ResponsiveUtils.height(context, 8),
+              decoration: const BoxDecoration(
+                color: Color(0xFF10B981),
+                shape: BoxShape.circle,
+              ),
+            ),
+          ],
+        ),
+        ResponsiveUtils.verticalSpace(context, 8),
+        Text(
+          '1+ Years Experience',
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.8),
+            fontSize: ResponsiveUtils.fontSize(
+                context,
+                ResponsiveUtils.isMobile(context)
+                    ? 14
+                    : ResponsiveUtils.isTablet(context)
+                        ? 16
+                        : 18),
+            fontWeight: FontWeight.w400,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Widget _buildDescription() {
+  Widget _buildDescription(BuildContext context) {
     return Text(
       'Passionate about creating beautiful, performant mobile applications with Flutter. I love turning complex problems into simple, elegant solutions.',
-      style: TextStyle(
+      style: ResponsiveUtils.bodyLarge(context).copyWith(
         color: Colors.white.withOpacity(0.9),
-        fontSize: 18,
-        height: 1.6,
         fontWeight: FontWeight.w400,
       ),
     );
   }
 
-  Widget _buildActionButtons() {
-    return Row(
-      children: [
-        _buildPrimaryButton(),
-        const SizedBox(width: 16),
-        _buildSecondaryButton(),
-      ],
-    );
+  Widget _buildActionButtons(BuildContext context) {
+    return ResponsiveUtils.isMobile(context)
+        ? Column(
+            children: [
+              _buildPrimaryButton(context),
+              ResponsiveUtils.verticalSpace(context, 12),
+              _buildSecondaryButton(context),
+            ],
+          )
+        : Row(
+            children: [
+              _buildPrimaryButton(context),
+              ResponsiveUtils.horizontalSpace(context, 16),
+              _buildSecondaryButton(context),
+            ],
+          );
   }
 
-  Widget _buildPrimaryButton() {
+  Widget _buildPrimaryButton(BuildContext context) {
     return Container(
+      width: ResponsiveUtils.isMobile(context) ? double.infinity : null,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFFFF6B6B), Color(0xFFEE5A24)],
         ),
-        borderRadius: BorderRadius.circular(30),
+        borderRadius:
+            BorderRadius.circular(ResponsiveUtils.radius(context, 30)),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFFFF6B6B).withOpacity(0.4),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            blurRadius: ResponsiveUtils.width(context, 20),
+            offset: Offset(0, ResponsiveUtils.height(context, 10)),
           ),
         ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(30),
+          borderRadius:
+              BorderRadius.circular(ResponsiveUtils.radius(context, 30)),
           onTap: () {}, // Add your contact action here
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          child: Padding(
+            padding: ResponsiveUtils.paddingSymmetric(context,
+                horizontal: 32, vertical: 16),
             child: Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: ResponsiveUtils.isMobile(context)
+                  ? MainAxisSize.max
+                  : MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.work_rounded, color: Colors.white, size: 20),
-                SizedBox(width: 8),
+                Icon(Icons.work_rounded,
+                    color: Colors.white,
+                    size: ResponsiveUtils.width(context, 20)),
+                ResponsiveUtils.horizontalSpace(context, 8),
                 Text(
                   'Hire Me',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: ResponsiveUtils.fontSize(context, 16),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -313,30 +349,42 @@ class _HomeSectionState extends State<HomeSection>
     );
   }
 
-  Widget _buildSecondaryButton() {
+  Widget _buildSecondaryButton(BuildContext context) {
     return Container(
+      width: ResponsiveUtils.isMobile(context) ? double.infinity : null,
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(30),
+        borderRadius:
+            BorderRadius.circular(ResponsiveUtils.radius(context, 30)),
         border: Border.all(color: Colors.white.withOpacity(0.3)),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(30),
-          onTap: () {}, // Add your portfolio download action here
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          borderRadius: BorderRadius.circular(ResponsiveUtils.radius(context, 30)),
+          onTap: () async {
+            if (!await launchUrl(resumeUrl, mode: LaunchMode.externalApplication)) {
+              throw Exception("Could not launch $resumeUrl");
+            }
+          },
+          child: Padding(
+            padding: ResponsiveUtils.paddingSymmetric(context,
+                horizontal: 32, vertical: 16),
             child: Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: ResponsiveUtils.isMobile(context)
+                  ? MainAxisSize.max
+                  : MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.download_rounded, color: Colors.white, size: 20),
-                SizedBox(width: 8),
+                Icon(Icons.download_rounded,
+                    color: Colors.white,
+                    size: ResponsiveUtils.width(context, 20)),
+                ResponsiveUtils.horizontalSpace(context, 8),
                 Text(
                   'Resume',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: ResponsiveUtils.fontSize(context, 16),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -348,11 +396,17 @@ class _HomeSectionState extends State<HomeSection>
     );
   }
 
-  Widget _buildProfileImage() {
+  Widget _buildProfileImage(BuildContext context) {
+    final imageSize = ResponsiveUtils.isMobile(context)
+        ? 200.0
+        : ResponsiveUtils.isTablet(context)
+        ? 250.0
+        : 300.0;
+
     return Center(
       child: Container(
-        width: 300,
-        height: 300,
+        width: ResponsiveUtils.width(context, imageSize),
+        height: ResponsiveUtils.width(context, imageSize), // keep width = height
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: LinearGradient(
@@ -366,25 +420,25 @@ class _HomeSectionState extends State<HomeSection>
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
-              blurRadius: 30,
-              offset: const Offset(0, 15),
+              blurRadius: ResponsiveUtils.width(context, 20),
+              offset: Offset(0, ResponsiveUtils.height(context, 15)),
             ),
           ],
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [Color(0xFFFF6B6B), Color(0xFFEE5A24)],
-              ),
+        child: Container(
+          margin: const EdgeInsets.all(4), // border effect
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              colors: [Color(0xFFFF6B6B), Color(0xFFEE5A24)],
             ),
-            child: ClipOval(
-              child: Image.asset(
-                "assets/profile_img.png",
-                fit: BoxFit.cover,
-              ),
+          ),
+          child: ClipOval(
+            child: Image.asset(
+              "assets/profile_img.png",
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
             ),
           ),
         ),

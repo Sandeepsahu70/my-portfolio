@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../utils/responsive_utils.dart';
 
 class ProjectsSection extends StatefulWidget {
   const ProjectsSection({super.key});
@@ -16,48 +17,48 @@ class _ProjectsSectionState extends State<ProjectsSection> {
     Project(
       title: 'AstroUnikon-Talk to Astrologer',
       description:
-      'AstroUnikon connects users with astrologers through live chat and call features, Live Streams etc.',
+          'AstroUnikon connects users with astrologers through live chat and call features, Live Streams etc.',
       imageUrl: 'assets/images/astrounikon.png',
       category: 'Mobile',
       technologies: ['Flutter', 'Firebase', 'Razorpay', 'GetX'],
       githubUrl: '#',
       liveUrl:
-      'https://play.google.com/store/apps/details?id=com.astrounikondiploy.user',
+          'https://play.google.com/store/apps/details?id=com.astrounikondiploy.user',
       color: const Color(0xFF6366F1),
     ),
     Project(
       title: 'AstroUnikon-Partner',
       description:
-      'Astrologers connects users with AstroUnikon-Partner through live chat and call features, Live Streams etc.',
+          'Astrologers connects users with AstroUnikon-Partner through live chat and call features, Live Streams etc.',
       imageUrl: 'assets/images/astrounikon.png',
       category: 'Mobile',
       technologies: ['Flutter', 'Firebase', 'Razorpay', 'GetX'],
       githubUrl: '#',
       liveUrl:
-      'https://play.google.com/store/apps/details?id=com.astrounikondiploy.user',
+          'https://play.google.com/store/apps/details?id=com.astrounikondiploy.user',
       color: const Color(0xFF10B981),
     ),
     Project(
       title: 'Inventoresy',
       description:
-      'Inventory Easy is a powerful and user-friendly inventory management system designed to help businesses efficiently track and manage their sales, purchases, expenses, and profits.',
+          'Inventory Easy is a powerful and user-friendly inventory management system designed to help businesses efficiently track and manage their sales, purchases, expenses, and profits.',
       imageUrl: 'assets/images/inventory.png',
       category: 'Mobile',
       technologies: ['Dart', 'Flutter', 'REST API'],
       githubUrl: '#',
       liveUrl:
-      'https://play.google.com/store/apps/details?id=com.inventoryeasy',
+          'https://play.google.com/store/apps/details?id=com.inventoryeasy',
       color: const Color(0xFFF59E0B),
     ),
     Project(
       title: 'Portfolio Website',
       description:
-      'Responsive portfolio website built with Flutter Web showcasing modern design principles.',
+          'Responsive portfolio website built with Flutter Web showcasing modern design principles.',
       imageUrl: 'assets/images/PP.png',
       category: 'Web',
       technologies: ['Flutter Web', 'Responsive Design', 'Animations'],
       githubUrl: '#',
-      liveUrl: '#',
+      liveUrl: 'https://sandeep-portfolio-2025.web.app',
       color: const Color(0xFF8B5CF6),
     ),
   ];
@@ -71,25 +72,19 @@ class _ProjectsSectionState extends State<ProjectsSection> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final isDesktop = size.width > 1024;
-    final isTablet = size.width > 768 && size.width <= 1024;
-    final isMobile = size.width <= 768;
-
     return Container(
       width: double.infinity,
       color: Colors.white,
       child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: isDesktop ? 80 : (isTablet ? 40 : 16),
-          vertical: isDesktop ? 100 : (isTablet ? 80 : 40),
-        ),
+        padding: ResponsiveUtils.sectionPadding(context),
         child: Column(
           children: [
             _buildSectionHeader(context),
-            SizedBox(height: isDesktop ? 50 : (isTablet ? 40 : 30)),
+            ResponsiveUtils.verticalSpace(
+                context, ResponsiveUtils.isDesktop(context) ? 50 : 40),
             _buildCategoryFilter(context),
-            SizedBox(height: isDesktop ? 50 : (isTablet ? 40 : 30)),
+            ResponsiveUtils.verticalSpace(
+                context, ResponsiveUtils.isDesktop(context) ? 50 : 40),
             _buildProjectsGrid(context),
           ],
         ),
@@ -174,7 +169,8 @@ class _ProjectsSectionState extends State<ProjectsSection> {
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFF6366F1) : Colors.grey[100],
+                  color:
+                      isSelected ? const Color(0xFF6366F1) : Colors.grey[100],
                   borderRadius: BorderRadius.circular(25),
                   border: Border.all(
                     color: isSelected
@@ -291,13 +287,13 @@ class _ProjectsSectionState extends State<ProjectsSection> {
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) =>
                                 Container(
-                                  color: Colors.grey[200],
-                                  child: Icon(
-                                    Icons.image,
-                                    size: isMobile ? 40 : 60,
-                                    color: Colors.grey[400],
-                                  ),
-                                ),
+                              color: Colors.grey[200],
+                              child: Icon(
+                                Icons.image,
+                                size: isMobile ? 40 : 60,
+                                color: Colors.grey[400],
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -373,7 +369,8 @@ class _ProjectsSectionState extends State<ProjectsSection> {
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
-                              children: project.technologies.take(3).map((tech) {
+                              children:
+                                  project.technologies.take(3).map((tech) {
                                 return Container(
                                   margin: const EdgeInsets.only(right: 6),
                                   padding: EdgeInsets.symmetric(
@@ -407,7 +404,7 @@ class _ProjectsSectionState extends State<ProjectsSection> {
                             'View Live',
                             Icons.launch,
                             project.color,
-                                () async {
+                            () async {
                               final Uri url = Uri.parse(project.liveUrl);
                               if (!await launchUrl(
                                 url,
@@ -432,12 +429,12 @@ class _ProjectsSectionState extends State<ProjectsSection> {
   }
 
   Widget _buildActionButton(
-      String text,
-      IconData icon,
-      Color color,
-      Future<void> Function()? onTap,
-      bool isMobile,
-      ) {
+    String text,
+    IconData icon,
+    Color color,
+    Future<void> Function()? onTap,
+    bool isMobile,
+  ) {
     return GestureDetector(
       onTap: onTap,
       child: Container(

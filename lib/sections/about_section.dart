@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-
+import '../utils/responsive_utils.dart';
 
 class Skill {
   final String name;
   final double level;
   final Color color;
-
 
   Skill(this.name, this.level, this.color);
 }
@@ -26,62 +25,55 @@ class _AboutSectionState extends State<AboutSection> {
     Skill('REST API', 0.82, const Color(0xFF4CAF50)),
     Skill('Git', 0.80, const Color(0xFFFF5722)),
     Skill('UI/UX', 0.75, const Color(0xFFE91E63)),
-    // Skill('Node.js', 0.70, const Color(0xFF68A063)),
   ];
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final isDesktop = size.width > 768;
-
     return Container(
       width: double.infinity,
       color: const Color(0xFFF8FAFC),
       child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: isDesktop ? 80 : 20,
-          vertical: isDesktop ? 100 : 60,
-        ),
+        padding: ResponsiveUtils.sectionPadding(context),
         child: Column(
           children: [
-            _buildSectionHeader(),
-            SizedBox(height: isDesktop ? 80 : 50),
-            isDesktop 
-                ? _buildDesktopLayout() 
-                : _buildMobileLayout(),
+            _buildSectionHeader(context),
+            ResponsiveUtils.verticalSpace(
+                context, ResponsiveUtils.isDesktop(context) ? 80 : 50),
+            ResponsiveUtils.isDesktop(context)
+                ? _buildDesktopLayout(context)
+                : _buildMobileLayout(context),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSectionHeader() {
+  Widget _buildSectionHeader(BuildContext context) {
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          padding: ResponsiveUtils.paddingSymmetric(context,
+              horizontal: 20, vertical: 8),
           decoration: BoxDecoration(
             color: const Color(0xFF6366F1).withOpacity(0.1),
-            borderRadius: BorderRadius.circular(50),
+            borderRadius:
+            BorderRadius.circular(ResponsiveUtils.radius(context, 50)),
           ),
-          child: const Text(
+          child: Text(
             'About Me',
             style: TextStyle(
-              color: Color(0xFF6366F1),
-              fontSize: 14,
+              color: const Color(0xFF6366F1),
+              fontSize: ResponsiveUtils.fontSize(context, 14),
               fontWeight: FontWeight.w600,
               letterSpacing: 1,
             ),
           ),
         ),
-        const SizedBox(height: 16),
-        const Text(
-          'Passionate Developer ',
-          style: TextStyle(
-            fontSize: 36,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF1E293B),
-            height: 1.2,
+        ResponsiveUtils.verticalSpace(context, 16),
+        Text(
+          'Passionate Developer',
+          style: ResponsiveUtils.headingLarge(context).copyWith(
+            color: const Color(0xFF1E293B),
           ),
           textAlign: TextAlign.center,
         ),
@@ -89,69 +81,71 @@ class _AboutSectionState extends State<AboutSection> {
     );
   }
 
-  Widget _buildDesktopLayout() {
+  Widget _buildDesktopLayout(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           flex: 2,
-          child: _buildAboutContent(),
+          child: _buildAboutContent(context),
         ),
-        const SizedBox(width: 80),
+        ResponsiveUtils.horizontalSpace(context, 80),
         Expanded(
           flex: 1,
-          child: _buildSkillsSection(),
+          child: _buildSkillsSection(context),
         ),
       ],
     );
   }
 
-  Widget _buildMobileLayout() {
+  Widget _buildMobileLayout(BuildContext context) {
     return Column(
       children: [
-        _buildAboutContent(),
-        const SizedBox(height: 50),
-        _buildSkillsSection(),
+        _buildAboutContent(context),
+        ResponsiveUtils.verticalSpace(context, 50),
+        _buildSkillsSection(context),
       ],
     );
   }
 
-  Widget _buildAboutContent() {
+  Widget _buildAboutContent(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildStatsRow(),
-        const SizedBox(height: 40),
-        _buildAboutText(),
-        const SizedBox(height: 30),
-        _buildFeatures(),
+        _buildStatsRow(context),
+        ResponsiveUtils.verticalSpace(context, 40),
+        _buildAboutText(context),
+        ResponsiveUtils.verticalSpace(context, 30),
+        _buildFeatures(context),
       ],
     );
   }
 
-  Widget _buildStatsRow() {
+  Widget _buildStatsRow(BuildContext context) {
+    // Always use row layout regardless of screen size
     return Row(
       children: [
-        Expanded(child: _buildStatCard('1+', 'Years\nExperience')),
-        const SizedBox(width: 20),
-        Expanded(child: _buildStatCard('10+', 'Projects\nCompleted')),
-        // const SizedBox(width: 20),
-        // Expanded(child: _buildStatCard('100%', 'Client\nSatisfaction')),
+        Expanded(
+            child: _buildStatCard(context, '1+', 'Years\nExperience')),
+        ResponsiveUtils.horizontalSpace(context, 20),
+        Expanded(
+            child: _buildStatCard(context, '10+', 'Projects\nCompleted')),
       ],
     );
   }
 
-  Widget _buildStatCard(String number, String label) {
+  Widget _buildStatCard(BuildContext context, String number, String label) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: ResponsiveUtils.paddingAll(context, 24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius:
+        BorderRadius.circular(ResponsiveUtils.radius(context, 16)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            blurRadius: ResponsiveUtils.width(context, 20),
+            offset: Offset(0, ResponsiveUtils.height(context, 10)),
           ),
         ],
       ),
@@ -159,19 +153,18 @@ class _AboutSectionState extends State<AboutSection> {
         children: [
           Text(
             number,
-            style: const TextStyle(
-              fontSize: 32,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.fontSize(
+                  context, ResponsiveUtils.isMobile(context) ? 24 : 32),
               fontWeight: FontWeight.bold,
-              color: Color(0xFF6366F1),
+              color: const Color(0xFF6366F1),
             ),
           ),
-          const SizedBox(height: 8),
+          ResponsiveUtils.verticalSpace(context, 8),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 14,
+            style: ResponsiveUtils.bodySmall(context).copyWith(
               color: Colors.grey[600],
-              height: 1.4,
             ),
             textAlign: TextAlign.center,
           ),
@@ -180,83 +173,86 @@ class _AboutSectionState extends State<AboutSection> {
     );
   }
 
-  Widget _buildAboutText() {
+  Widget _buildAboutText(BuildContext context) {
+    final textStyle = ResponsiveUtils.bodyLarge(context).copyWith(
+      color: Colors.grey[700],
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Hello! I\'m a passionate Flutter developer with a love for creating beautiful, functional, and user-friendly mobile applications.',
-          style: TextStyle(
-            fontSize: 18,
-            height: 1.7,
-            color: Colors.grey[700],
-          ),
+          style: textStyle,
         ),
-        const SizedBox(height: 20),
+        ResponsiveUtils.verticalSpace(context, 20),
         Text(
           'I specialize in cross-platform development using Flutter and have experience working with various state management solutions, backend integration, and modern UI/UX principles.',
-          style: TextStyle(
-            fontSize: 18,
-            height: 1.7,
-            color: Colors.grey[700],
-          ),
+          style: textStyle,
         ),
-        const SizedBox(height: 20),
+        ResponsiveUtils.verticalSpace(context, 20),
         Text(
           'When I\'m not coding, you can find me exploring new technologies, contributing to open-source projects, or enjoying a good cup of coffee while planning my next big project.',
-          style: TextStyle(
-            fontSize: 18,
-            height: 1.7,
-            color: Colors.grey[700],
-          ),
+          style: textStyle,
         ),
       ],
     );
   }
 
-  Widget _buildFeatures() {
+  Widget _buildFeatures(BuildContext context) {
     final features = [
-      {'icon': Icons.mobile_friendly, 'title': 'Mobile First', 'desc': 'Responsive design for all devices'},
-      {'icon': Icons.speed, 'title': 'Fast Performance', 'desc': 'Optimized for speed and efficiency'},
-      {'icon': Icons.brush, 'title': 'Modern UI', 'desc': 'Beautiful and intuitive interfaces'},
-      // {'icon': Icons.support_agent, 'title': '24/7 Support', 'desc': 'Always available for my clients'},
+      {
+        'icon': Icons.mobile_friendly,
+        'title': 'Mobile First',
+        'desc': 'Responsive design for all devices'
+      },
+      {
+        'icon': Icons.speed,
+        'title': 'Fast Performance',
+        'desc': 'Optimized for speed and efficiency'
+      },
+      {
+        'icon': Icons.brush,
+        'title': 'Modern UI',
+        'desc': 'Beautiful and intuitive interfaces'
+      },
     ];
 
     return Column(
-      children: features.map((feature) => Padding(
-        padding: const EdgeInsets.only(bottom: 20),
+      children: features
+          .map((feature) => Padding(
+        padding: ResponsiveUtils.paddingOnly(context, bottom: 20),
         child: Row(
           children: [
             Container(
-              width: 48,
-              height: 48,
+              width: ResponsiveUtils.width(context, 48),
+              height: ResponsiveUtils.height(context, 48),
               decoration: BoxDecoration(
                 color: const Color(0xFF6366F1).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(
+                    ResponsiveUtils.radius(context, 12)),
               ),
               child: Icon(
                 feature['icon'] as IconData,
                 color: const Color(0xFF6366F1),
-                size: 24,
+                size: ResponsiveUtils.width(context, 24),
               ),
             ),
-            const SizedBox(width: 16),
+            ResponsiveUtils.horizontalSpace(context, 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     feature['title'] as String,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF1E293B),
+                    style:
+                    ResponsiveUtils.headingSmall(context).copyWith(
+                      color: const Color(0xFF1E293B),
                     ),
                   ),
                   Text(
                     feature['desc'] as String,
-                    style: TextStyle(
-                      fontSize: 14,
+                    style: ResponsiveUtils.bodySmall(context).copyWith(
                       color: Colors.grey[600],
                     ),
                   ),
@@ -265,31 +261,30 @@ class _AboutSectionState extends State<AboutSection> {
             ),
           ],
         ),
-      )).toList(),
+      ))
+          .toList(),
     );
   }
 
-  Widget _buildSkillsSection() {
+  Widget _buildSkillsSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Skills & Technologies',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF1E293B),
+          style: ResponsiveUtils.headingMedium(context).copyWith(
+            color: const Color(0xFF1E293B),
           ),
         ),
-        const SizedBox(height: 24),
-        ...skills.map((skill) => _buildSkillItem(skill)).toList(),
+        ResponsiveUtils.verticalSpace(context, 24),
+        ...skills.map((skill) => _buildSkillItem(context, skill)),
       ],
     );
   }
 
-  Widget _buildSkillItem( skill) {
+  Widget _buildSkillItem(BuildContext context, Skill skill) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 24),
+      margin: ResponsiveUtils.paddingOnly(context, bottom: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -298,27 +293,25 @@ class _AboutSectionState extends State<AboutSection> {
             children: [
               Text(
                 skill.name,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF1E293B),
+                style: ResponsiveUtils.headingSmall(context).copyWith(
+                  color: const Color(0xFF1E293B),
                 ),
               ),
               Text(
                 '${(skill.level * 100).toInt()}%',
-                style: TextStyle(
-                  fontSize: 14,
+                style: ResponsiveUtils.bodySmall(context).copyWith(
                   color: Colors.grey[600],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          ResponsiveUtils.verticalSpace(context, 8),
           Container(
-            height: 6,
+            height: ResponsiveUtils.height(context, 6),
             decoration: BoxDecoration(
               color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(3),
+              borderRadius:
+              BorderRadius.circular(ResponsiveUtils.radius(context, 3)),
             ),
             child: FractionallySizedBox(
               alignment: Alignment.centerLeft,
@@ -326,7 +319,8 @@ class _AboutSectionState extends State<AboutSection> {
               child: Container(
                 decoration: BoxDecoration(
                   color: skill.color,
-                  borderRadius: BorderRadius.circular(3),
+                  borderRadius:
+                  BorderRadius.circular(ResponsiveUtils.radius(context, 3)),
                 ),
               ),
             ),

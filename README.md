@@ -2,6 +2,19 @@
 
 A new Flutter project.
 
+## 👨‍💻 About Me
+Hi, I’m **Sandeep Teli**, a passionate **Flutter Developer** with 1+ years of experience in building high-quality mobile applications.  
+This app is my personal portfolio where you can explore my projects, skills, and contact details.
+
+## 🚀 Features
+- Personal Introduction
+- Skills & Expertise
+- Projects Showcase
+- Work Experience
+- Contact Information
+
+---
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
